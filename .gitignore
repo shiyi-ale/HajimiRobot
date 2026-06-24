@@ -1,0 +1,25 @@
+.DS_Store
+
+# Node / frontend
+node_modules/
+dist/
+build/
+coverage/
+*.log
+
+# Local env files
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Local outputs
+recordings/
+*.mjpeg
+*.mp4
+

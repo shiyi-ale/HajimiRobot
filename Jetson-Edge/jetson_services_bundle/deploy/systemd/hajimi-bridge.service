@@ -1,0 +1,20 @@
+[Unit]
+Description=Hajimi Jetson Bridge API
+After=network-online.target hajimi-camera.service
+Wants=network-online.target hajimi-camera.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/zhj/Hajimi
+Environment=CAMERA_BASE_URL=http://127.0.0.1:5000
+Environment=CAMERA_PUBLIC_BASE_URL=http://192.168.31.209:5000
+Environment=CAR_PULSE_SECONDS=0.03
+Environment=CAR_WATCHDOG_TIMEOUT=0.25
+Environment=CAR_STOP_BURST_COUNT=5
+Environment=CAR_STOP_BURST_INTERVAL=0.02
+ExecStart=/usr/bin/python3 -m uvicorn jetson_bridge:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,5 @@
+Ultralytics file: /ssd3/adv_patch/cat-detect/lib/python3.11/site-packages/ultralytics/__init__.py
+Ultralytics version: 8.4.56
+YOLO class imported successfully
+DetectionTrainer: <class 'ultralytics.models.yolo.detect.train.DetectionTrainer'>
+DetectionTrainer file: /ssd3/adv_patch/cat-detect/lib/python3.11/site-packages/ultralytics/models/yolo/detect/train.py

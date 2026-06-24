@@ -1,0 +1,15 @@
+path: /ssd3/adv_patch/cat-detect/dataset
+
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 6
+names: ['eating', 'playing', 'rest', 'sitting', 'stretching', 'yawning']
+
+roboflow:
+  workspace: cat-qivfm
+  project: cat-behavior-sfvvh
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/cat-qivfm/cat-behavior-sfvvh/dataset/1

@@ -1,0 +1,36 @@
+# Datasets
+dataset/
+datasets/
+
+# Large model artifacts
+*.pt
+*.pth
+*.onnx
+*.engine
+*.trt
+*.plan
+
+# Videos and prediction dumps
+*.mp4
+*.avi
+*.mov
+*.mkv
+video/
+labels/
+
+# Runtime outputs
+runs/
+outputs/weights/
+logs/*.pid
+nohup.out
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
