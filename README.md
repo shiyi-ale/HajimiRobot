@@ -23,8 +23,6 @@ Open http://127.0.0.1:3000 . Supply your own six-class weights and video. Statis
 
 [Quick start](docs/en/quickstart.md) · [User guide](docs/en/user-guide.md) · [Architecture](docs/en/architecture.md) · [API](docs/en/api.md) · [Documentation](docs/en/README.md) · [Changelog](CHANGELOG.md)
 
-![Activity review](assets/docs/nvr-2.0.1.png)
-![Behavior reports](assets/docs/agent-2.0.1.png)
 
 **Embedded robotics · Edge AI · Computer vision · Full-stack AIoT · Engineering prototyping**
 
