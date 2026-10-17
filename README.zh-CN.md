@@ -10,6 +10,22 @@
 
 # HajimiRobot — AI 智能移动宠物陪护机器人
 
+## 2.0.1 · 本机 NVR 与行为报告
+
+面向日常看护的简洁控制台：运动调度GPU YOLO、保留证据的事件回看、SQLite记忆、本地CPU嵌入与Qdrant、LangGraph + DeepSeek报告。无需Jetson即可运行桌面链路。
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/setup.ps1
+powershell -ExecutionPolicy Bypass -File scripts/start.ps1
+```
+
+打开 http://127.0.0.1:3000 。自行提供六类权重和视频；无Key可生成统计报告，DeepSeek为可选云端生成。密钥和运行数据不随源码发布。
+
+[Quick start](docs/zh/quickstart.md) · [User guide](docs/zh/user-guide.md) · [Architecture](docs/zh/architecture.md) · [API](docs/zh/api.md) · [Documentation](docs/zh/README.md) · [Changelog](CHANGELOG.md)
+
+![Activity review](assets/docs/nvr-2.0.1.png)
+![Behavior reports](assets/docs/agent-2.0.1.png)
+
 **机器人控制 · 嵌入式开发 · 边缘 AI · 计算机视觉 · AIoT 全栈工程实践**
 
 HajimiRobot 是 **电子科技大学（UESTC）× 法国 ESIGELEC** 项目背景下的团队工程原型，结合 Jetson Nano、STM32F407、全向移动底盘、双轴云台、投喂执行机构、YOLO26 猫咪行为识别，以及 Web 远程监控与控制平台。
@@ -30,7 +46,7 @@ HajimiRobot 是 **电子科技大学（UESTC）× 法国 ESIGELEC** 项目背景
 | 模型优化 | 小波特征蒸馏 WFD：YOLO26x 教师 → YOLO26n 学生 |
 | 工程方法 | 模块拆解、硬件联调、接口测试、推理测量、迭代优化 |
 
-## 二、系统架构与模块分工
+## 二、机器人硬件架构与模块分工
 
 ~~~text
 React / TypeScript Web 控制台

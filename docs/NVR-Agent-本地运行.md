@@ -1,0 +1,6 @@
+# HajimiRobot 2.0.1
+
+本入口已合并到新版文档，旧版阶段性说明已更新。
+
+- [中文](zh/quickstart.md)
+- [English](en/quickstart.md)

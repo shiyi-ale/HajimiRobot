@@ -10,6 +10,22 @@
 
 # HajimiRobot — AI-Powered Mobile Pet-Care Robot
 
+## 2.0.1 · Local NVR & behavior reports
+
+A calm pet-care console with motion-aware GPU YOLO, evidence-preserving review, SQLite memory, local CPU embeddings/Qdrant, and LangGraph + DeepSeek reports. Hardware is optional for desktop use.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/setup.ps1
+powershell -ExecutionPolicy Bypass -File scripts/start.ps1
+```
+
+Open http://127.0.0.1:3000 . Supply your own six-class weights and video. Statistical reports work without a key. DeepSeek is optional cloud generation. Runtime data and keys are never shipped.
+
+[Quick start](docs/en/quickstart.md) · [User guide](docs/en/user-guide.md) · [Architecture](docs/en/architecture.md) · [API](docs/en/api.md) · [Documentation](docs/en/README.md) · [Changelog](CHANGELOG.md)
+
+![Activity review](assets/docs/nvr-2.0.1.png)
+![Behavior reports](assets/docs/agent-2.0.1.png)
+
 **Embedded robotics · Edge AI · Computer vision · Full-stack AIoT · Engineering prototyping**
 
 HajimiRobot is a collaborative engineering prototype developed in the context of the **UESTC × ESIGELEC** project program. It combines a mobile robot, a camera gimbal, an STM32 microcontroller, a Jetson Nano edge computer, a web control console, and a six-class cat-behavior recognition pipeline.
@@ -30,7 +46,7 @@ The motivating problem: stationary pet-care devices are limited in how they can 
 | Model optimization | Wavelet Feature Distillation (WFD), teacher YOLO26x → student YOLO26n |
 | Engineering process | Hardware/software integration, peripheral debugging, API testing, latency measurement |
 
-## System architecture
+## Robot hardware architecture
 
 ~~~text
 Browser (React / TypeScript)

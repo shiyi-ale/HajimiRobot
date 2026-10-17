@@ -1,0 +1,1 @@
+{"protocol_version":"1.0","device_id":"protocol-test","camera_id":"primary","session_id":"documented-test-1","frame_id":1,"captured_at":"2026-03-01T04:00:00.200Z","width":640,"height":360,"model_id":"EXPLICIT-TEST-NOT-YOLO","source":"test","observation_sec":0.2,"boxes":[{"label":"playing","confidence":0.9,"xyxy":[0.1,0.2,0.6,0.8]}]}

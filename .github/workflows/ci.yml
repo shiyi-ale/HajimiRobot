@@ -1,0 +1,26 @@
+name: Core checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: windows-latest
+    env:
+      EMBEDDING_BACKEND: api
+      PYTHONPATH: services/intelligence
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: Web-Console/package-lock.json
+      - run: python -m pip install -r services/intelligence/requirements.lock.txt
+      - run: python -m pytest services/intelligence/tests -q
+      - run: npm ci --prefix Web-Console
+      - run: npm run test --prefix Web-Console
+      - run: npm run lint --prefix Web-Console
+      - run: npm run build --prefix Web-Console
