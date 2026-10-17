@@ -21,6 +21,7 @@ import { getDeviceStatus, getMonitorSidebar, getRecordings, getSecondaryStreamSt
 import { connectFrontendSocket } from '@/src/lib/socket';
 import type { DeviceStatus, MonitorSidebarData, StreamConfig, DetectionPayload, FrontendSocketMessage, SecondaryStreamStatus, RecordingFile } from '@/src/types';
 import DriveControls from './DriveControls';
+import HardwareGuard from './HardwareGuard';
 
 async function postJson(path: string, body?: unknown) {
   const response = await fetch(path, {
@@ -423,7 +424,7 @@ export default function Monitor() {
                   isRecording ? "bg-red-500" : "bg-white/20 hover:bg-white/30",
                   recordingBusy && 'opacity-60'
                 )}
-                disabled={recordingBusy}
+                disabled={recordingBusy || !deviceStatus?.streamConnected}
               >
                 <Video className="w-5 h-5" />
               </button>
@@ -510,7 +511,7 @@ export default function Monitor() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <DriveControls />
+        <HardwareGuard><DriveControls /></HardwareGuard>
       </motion.div>
 
       <motion.div
@@ -521,7 +522,7 @@ export default function Monitor() {
       >
         <button
           onClick={() => void handleFeed()}
-          disabled={isFeeding}
+          disabled={isFeeding || !deviceStatus?.isOnline}
           className="w-full flex items-center justify-between gap-4 rounded-2xl border border-orange-100 bg-orange-50 px-4 py-4 text-left transition-colors hover:bg-orange-100 disabled:opacity-60"
         >
           <div className="flex items-center gap-4">

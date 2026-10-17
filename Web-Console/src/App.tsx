@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { 
-  LayoutDashboard, 
-  Video, 
-  Settings as SettingsIcon, 
-  Gamepad2, 
-  FileText 
+import {
+  LayoutDashboard,
+  Video,
+  Settings as SettingsIcon,
+  Gamepad2,
+  FileText, PawPrint, Globe
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/src/lib/utils';
@@ -15,77 +15,48 @@ import { useLanguage } from './lib/i18n';
 import Dashboard from './components/Dashboard';
 import Monitor from './components/Monitor';
 import Control from './components/Control';
-import Reports from './components/Reports';
 import Settings from './components/Settings';
+import NvrConsole from './components/NvrConsole';
+import AgentConsole from './components/AgentConsole';
+import HardwareGuard from './components/HardwareGuard';
 
+declare const __APP_VERSION__: string;
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('dashboard');
-  const { dict } = useLanguage();
-
+  const [currentPage, setCurrentPage] = useState<Page>('nvr');
+  const [location, setLocation] = useState<import('./lib/console-types').ReviewLocation | undefined>();
+  const { dict, language, setLanguage } = useLanguage();
+  const zh = language === 'zh';
   const navItems = [
-    { id: 'dashboard', label: dict.nav.dashboard, icon: LayoutDashboard },
-    { id: 'monitor', label: dict.nav.monitor, icon: Video },
-    { id: 'control', label: dict.nav.control, icon: Gamepad2 },
-    { id: 'reports', label: dict.nav.reports, icon: FileText },
-    { id: 'settings', label: dict.nav.settings, icon: SettingsIcon },
+    {id:'nvr',label:zh?'活动回看':'Activity',icon:Video},
+    {id:'reports',label:zh?'行为报告':'Reports',icon:FileText},
+    {id:'dashboard',label:dict.nav.dashboard,icon:LayoutDashboard},
+    {id:'monitor',label:dict.nav.monitor,icon:Video},
+    {id:'control',label:dict.nav.control,icon:Gamepad2},
+    {id:'settings',label:dict.nav.settings,icon:SettingsIcon},
   ];
-
   const renderPage = () => {
-    switch (currentPage) {
-      case 'dashboard': return <Dashboard />;
-      case 'monitor': return <Monitor />;
-      case 'control': return <Control />;
-      case 'reports': return <Reports />;
-      case 'settings': return <Settings />;
-      default: return <Dashboard />;
+    switch(currentPage) {
+      case 'nvr': return <NvrConsole location={location}/>;
+      case 'reports': return <AgentConsole onReview={next=>{setLocation(next);setCurrentPage('nvr');}}/>;
+      case 'dashboard': return <Dashboard/>;
+      case 'monitor': return <Monitor/>;
+      case 'control': return <HardwareGuard><Control/></HardwareGuard>;
+      default: return <Settings/>;
     }
   };
-
-  return (
-    <div className="min-h-screen bg-slate-50 flex flex-col max-w-xl mx-auto relative shadow-2xl shadow-slate-200">
-      {/* Main Content */}
-      <main className="flex-1 px-6 pt-8 pb-24 overflow-y-auto no-scrollbar">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentPage}
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -10 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-          >
-            {renderPage()}
-          </motion.div>
-        </AnimatePresence>
+  return <div className="care-shell">
+    <aside className="care-sidebar">
+      <a href="#" onClick={e=>{e.preventDefault();setCurrentPage('nvr');}} className="care-logo"><span><PawPrint size={25}/></span><div>Hajimi<small>{zh?'陪伴每一个日常':'A little closer, every day'}</small></div></a>
+      <p className="sidebar-caption">{zh?'我的宠物空间':'YOUR PET SPACE'}</p>
+      <nav aria-label={zh?'主导航':'Main navigation'}>{navItems.map(item=><button key={item.id} aria-current={currentPage===item.id?'page':undefined} onClick={()=>setCurrentPage(item.id as Page)} className={cn('care-nav-item',currentPage===item.id&&'active')}><item.icon size={19}/><span>{item.label}</span></button>)}</nav>
+      <div className="sidebar-note"><PawPrint size={22}/><p>{zh?'把每一次活动，变成更懂它的线索。':'Small moments. A better understanding.'}</p><span>v{__APP_VERSION__}</span></div>
+    </aside>
+    <div className="care-workspace">
+      <header className="care-topbar"><div className="flex items-center gap-2 text-sm"><PawPrint size={17} className="text-[#65836a]"/><span>{zh?'哈基米的陪伴日记':'Hajimi’s care journal'}</span></div><button className="quiet-button" onClick={()=>setLanguage(zh?'en':'zh')} aria-label={zh?'切换为英文':'Switch to Chinese'}><Globe size={15}/>{zh?'English':'中文'}</button></header>
+      <main className={cn('care-main',!['nvr','reports'].includes(currentPage)&&'care-main-narrow')}>
+        <AnimatePresence mode="wait"><motion.div key={currentPage} initial={{opacity:0,y:6}} animate={{opacity:1,y:0}} exit={{opacity:0}} transition={{duration:.16}}>{renderPage()}</motion.div></AnimatePresence>
       </main>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 inset-x-0 max-w-xl mx-auto bg-white/80 backdrop-blur-xl border-t border-slate-100 px-6 py-3 flex justify-between items-center z-50">
-        {navItems.map((item) => {
-          const isActive = currentPage === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => setCurrentPage(item.id as Page)}
-              className={cn(
-                "flex flex-col items-center gap-1 transition-all relative py-1",
-                isActive ? "text-brand-600" : "text-slate-400 hover:text-slate-600"
-              )}
-            >
-              <item.icon className={cn(
-                "w-6 h-6 transition-transform",
-                isActive && "scale-110"
-              )} />
-              <span className="text-[10px] font-bold tracking-tight">{item.label}</span>
-              {isActive && (
-                <motion.div 
-                  layoutId="nav-indicator"
-                  className="absolute -top-3 w-1 h-1 bg-brand-600 rounded-full"
-                />
-              )}
-            </button>
-          );
-        })}
-      </nav>
     </div>
-  );
+    <nav className="care-mobile-nav" aria-label={zh?'移动导航':'Mobile navigation'}>{navItems.map(item=><button key={item.id} aria-current={currentPage===item.id?'page':undefined} onClick={()=>setCurrentPage(item.id as Page)} className={currentPage===item.id?'active':''}><item.icon size={20}/><span>{item.label}</span></button>)}</nav>
+  </div>;
 }

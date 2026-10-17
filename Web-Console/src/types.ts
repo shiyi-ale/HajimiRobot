@@ -1,4 +1,4 @@
-export type Page = 'dashboard' | 'monitor' | 'control' | 'reports' | 'settings';
+export type Page = 'dashboard' | 'monitor' | 'control' | 'reports' | 'settings' | 'nvr';
 
 export interface DeviceStatus {
   deviceId?: string;
