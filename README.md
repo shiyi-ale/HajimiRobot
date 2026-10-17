@@ -210,21 +210,6 @@ This project is best understood as a cross-disciplinary engineering cycle:
 
 Useful verification tasks for future contributors include power/wiring checks, servo calibration, stop-command response, video stability, feeding actuation reliability, class-wise recognition results and end-to-end timing. These are **suggested acceptance criteria**, not a claim that a complete automated acceptance suite is already published.
 
-## Potential STEM / maker-learning modules
-
-Because the system spans multiple difficulty levels, it can be **adapted** into progressive project-based learning activities. This is a proposed teaching breakdown, **not a claim of previous classroom delivery**.
-
-| Stage | Student challenge | Learning objective / deliverable |
-|---|---|---|
-| Introductory | Control a servo and build a small camera gimbal | PWM, I2C, calibration; safe working demo |
-| Introductory–intermediate | Control a mobile chassis | GPIO, motor control, communication; drive/stop demo |
-| Intermediate | Make a robot control dashboard | Python/HTTP concepts, browser UI; working remote-control page |
-| Intermediate | Train a pet-behavior detector | Data annotation, validation, error analysis; evaluated CV model |
-| Advanced | Run a detector on edge hardware | ONNX/TensorRT, latency, constraints; benchmark record |
-| Integrated capstone | Build a pet-care prototype | Requirements, BOM, integration, test log, video and presentation |
-
-A potential project assessment can use **problem definition, design rationale, prototype functionality, measurement quality, debugging evidence, documentation and individual contribution**. Students should build and explain their own work rather than copy a complete solution.
-
 ## Project status and roadmap
 
 **Documented prototype / experiments:** web control console, Jetson bridge and camera services, STM32 control project, pan/tilt and mobile/feeding control integration, six-class YOLO experiments, WFD results, TensorRT benchmarks, and event/reporting workflow. Public reproducibility varies by component.
@@ -233,9 +218,9 @@ A potential project assessment can use **problem definition, design rationale, p
 
 ## People and attribution
 
-**Zhao Hangjian — Software Development / AI Algorithm Engineering**
+**Zhao Hangjian — Software Development / AI Algorithm Engineering / Embedded R&D**
 
-Responsibilities documented in the team presentation: **software development, system integration and AI algorithm design**. Hardware PCB design/manufacturing, assembly, debugging, product planning and coordination were shared across a multidisciplinary project team. This README does not attribute all team deliverables to a single contributor.
+Responsibilities documented in the team presentation: software development, system integration, AI algorithm design, and embedded R&D. Hardware PCB design/manufacturing, assembly, debugging, product planning and coordination were shared across a multidisciplinary project team. This README does not attribute all team deliverables to a single contributor.
 
 Project context: **University of Electronic Science and Technology of China (UESTC) × ESIGELEC (France)**. Project supervisor: **Louis Lecrosnier**. Presentation dated **September 1, 2026**.
 
