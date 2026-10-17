@@ -22,4 +22,24 @@ venv/
 recordings/
 *.mjpeg
 *.mp4
+.runtime/
+.pytest_cache/
+services/intelligence/data/
+yoloexp/exp/
 
+
+# Private datasets, model artifacts and local credentials
+*.pt
+*.pth
+*.onnx
+*.engine
+*.avi
+*.mov
+*.mkv
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+agent-settings.json
+*.pem
+*.key

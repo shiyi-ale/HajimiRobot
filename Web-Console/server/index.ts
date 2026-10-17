@@ -1,12 +1,13 @@
 import { config as loadEnv } from 'dotenv';
 import express, { type Request, type Response } from 'express';
-import { createWriteStream, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { createWriteStream, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 import type { ReadableStream as NodeReadableStream } from 'node:stream/web';
 import { WebSocketServer } from 'ws';
+import { mountIntelligence } from './intelligence';
 
 loadEnv({ path: path.resolve(process.cwd(), '.env.local') });
 loadEnv({ path: path.resolve(process.cwd(), '.env') });
@@ -44,15 +45,6 @@ type BehaviorEventPayload = {
   iso: string;
 };
 
-type YoloBehaviorLabel = 'eating' | 'playing' | 'rest' | 'sitting' | 'stretching' | 'yawning';
-
-type StoredBehaviorEvent = {
-  iso: string;
-  label: YoloBehaviorLabel;
-  score?: number;
-  source: 'yolo';
-};
-
 const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ noServer: true });
@@ -65,12 +57,11 @@ const jetsonCamera2BaseUrl = (
 ).replace(/\/$/, '');
 const jetsonBridgeBaseUrl = process.env.JETSON_BRIDGE_BASE_URL?.replace(/\/$/, '');
 const recordingsDir = path.resolve(process.cwd(), 'recordings');
-const dataDir = path.resolve(process.cwd(), 'data');
-const behaviorHistoryPath = path.join(dataDir, 'behavior-history.json');
-const localPythonPath = path.resolve(process.cwd(), '.codex-temp-venv/bin/python');
+const localPythonPath = process.env.PYTHON_EXE || path.resolve(process.cwd(), process.platform === 'win32' ? '../.venv/Scripts/python.exe' : '../.venv/bin/python');
 const conversionScriptPath = path.resolve(process.cwd(), 'scripts/convert_mjpeg_to_mp4.py');
 
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));
+mountIntelligence(app);
 app.use('/recordings', express.static(recordingsDir));
 
 type RecordingState = {
@@ -95,29 +86,12 @@ const recentBehaviorEvents: BehaviorEventPayload[] = [];
 const maxBehaviorEvents = 24;
 let lastPrimaryStreamConnected: boolean | null = null;
 let lastJetsonOnline: boolean | null = null;
-const behaviorLogCooldownMs = 60 * 60 * 1000;
 
 mkdirSync(recordingsDir, { recursive: true });
-mkdirSync(dataDir, { recursive: true });
 
-const behaviorHistory: StoredBehaviorEvent[] = loadBehaviorHistory();
 
 function nowIso() {
   return new Date().toISOString();
-}
-
-function loadBehaviorHistory() {
-  try {
-    const text = readFileSync(behaviorHistoryPath, 'utf8');
-    const parsed = JSON.parse(text) as StoredBehaviorEvent[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveBehaviorHistory() {
-  writeFileSync(behaviorHistoryPath, JSON.stringify(behaviorHistory, null, 2));
 }
 
 function formatClock(iso: string) {
@@ -151,162 +125,9 @@ function pushBehaviorEvent(event: string, type: BehaviorEventPayload['type'], is
   }
 }
 
-const behaviorLabelMeta: Record<
-  YoloBehaviorLabel,
-  {
-    title: string;
-    desc: string;
-    timelineEvent: string;
-    timelineType: BehaviorEventPayload['type'];
-    suggestion: string;
-    classLabel: string;
-  }
-> = {
-  eating: {
-    title: 'Eating',
-    desc: 'Autonomous eating detected with a stable feeding rhythm. (yolo-class=eating)',
-    timelineEvent: 'eating',
-    timelineType: 'feeding',
-    suggestion: 'YOLO26 detected the eating class. The same class is logged once every hour to track feeding regularity.',
-    classLabel: 'eating',
-  },
-  playing: {
-    title: 'Playing',
-    desc: 'Active play behavior detected with strong willingness to engage. (yolo-class=playing)',
-    timelineEvent: 'playing',
-    timelineType: 'activity',
-    suggestion: 'YOLO26 detected the playing class. The same class is logged once every hour to track activity interest.',
-    classLabel: 'playing',
-  },
-  rest: {
-    title: 'Rest',
-    desc: 'Calm resting behavior detected with a stable condition. (yolo-class=rest)',
-    timelineEvent: 'rest',
-    timelineType: 'rest',
-    suggestion: 'YOLO26 detected the rest class. The same class is logged once every hour to observe quiet periods.',
-    classLabel: 'rest',
-  },
-  sitting: {
-    title: 'Sitting',
-    desc: 'Sitting posture detected during a light observation state. (yolo-class=sitting)',
-    timelineEvent: 'sitting',
-    timelineType: 'activity',
-    suggestion: 'YOLO26 detected the sitting class. The same class is logged once every hour to observe stationary posture.',
-    classLabel: 'sitting',
-  },
-  stretching: {
-    title: 'Stretching',
-    desc: 'Stretching motion detected with a relaxed body state. (yolo-class=stretching)',
-    timelineEvent: 'stretching',
-    timelineType: 'activity',
-    suggestion: 'YOLO26 detected the stretching class. The same class is logged once every hour to observe relaxed transitions.',
-    classLabel: 'stretching',
-  },
-  yawning: {
-    title: 'Yawning',
-    desc: 'Yawning detected, which may indicate relaxation or drowsiness. (yolo-class=yawning)',
-    timelineEvent: 'yawning',
-    timelineType: 'rest',
-    suggestion: 'YOLO26 detected the yawning class. The same class is logged once every hour to observe drowsy periods.',
-    classLabel: 'yawning',
-  },
-};
-
-function toDateKey(iso: string) {
-  return iso.slice(0, 10);
-}
-
-function logBehaviorDetection(label: YoloBehaviorLabel, iso = nowIso(), score?: number) {
-  const nowMs = new Date(iso).getTime();
-  const lastSameLabel = [...behaviorHistory]
-    .reverse()
-    .find((item) => item.label === label);
-
-  if (lastSameLabel) {
-    const lastMs = new Date(lastSameLabel.iso).getTime();
-    if (nowMs - lastMs < behaviorLogCooldownMs) {
-      return {
-        ok: true,
-        recorded: false,
-        reason: 'cooldown',
-        nextAllowedAt: new Date(lastMs + behaviorLogCooldownMs).toISOString(),
-      };
-    }
-  }
-
-  const entry: StoredBehaviorEvent = {
-    iso,
-    label,
-    ...(typeof score === 'number' ? { score } : {}),
-    source: 'yolo',
-  };
-  behaviorHistory.push(entry);
-  saveBehaviorHistory();
-  const meta = behaviorLabelMeta[label];
-  pushBehaviorEvent(`识别到${meta.timelineEvent}`, meta.timelineType, iso);
-
-  return {
-    ok: true,
-    recorded: true,
-    entry,
-  };
-}
-
-function getReportDates() {
-  const uniqueDates = [...new Set(behaviorHistory.map((item) => toDateKey(item.iso)))].sort((a, b) => b.localeCompare(a));
-  const today = new Date().toISOString().slice(0, 10);
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-  return uniqueDates.map((date) => ({
-    date,
-    label: date === today ? 'Today' : date === yesterday ? 'Yesterday' : new Date(date).toLocaleDateString('en-US', { weekday: 'short' }),
-  }));
-}
-
-function buildDailyReport(date: string) {
-  const items = behaviorHistory
-    .filter((item) => toDateKey(item.iso) === date)
-    .sort((a, b) => b.iso.localeCompare(a.iso));
-
-  const feedingCount = items.filter((item) => item.label === 'eating').length;
-  const anomalies = 0;
-  const activeCount = items.filter((item) => ['playing', 'stretching', 'sitting'].includes(item.label)).length;
-  const activityHours = Math.max(0, activeCount);
-  const suggestions = [...new Set(items.map((item) => behaviorLabelMeta[item.label].suggestion))].slice(0, 3);
-  const detectedClasses = [...new Set(items.map((item) => behaviorLabelMeta[item.label].classLabel))];
-
-  return {
-    date,
-    weather: 'YOLO26 Format',
-    temperature: '6 classes · same class logged every 1 hour',
-    headline: 'YOLO detected different classes and recorded them over time',
-    summary: {
-      activityDuration: `${activityHours.toFixed(1)}h`,
-      feedingCount,
-      anomalies,
-    },
-    timeline: items.map((item) => {
-      const meta = behaviorLabelMeta[item.label];
-      return {
-        time: formatClock(item.iso),
-        event: meta.timelineEvent,
-        desc: meta.desc,
-        type: meta.timelineType,
-      };
-    }),
-    suggestions:
-      suggestions.length > 0
-        ? suggestions
-        : [
-            'YOLO26 currently supports 6 behavior classes: eating, playing, rest, sitting, stretching, and yawning.',
-            'The same detected class is logged once every hour to reduce duplicate timeline entries.',
-          ],
-    detectedClasses,
-  };
-}
-
 async function safeJsonFetch<T>(url: string): Promise<T | null> {
   try {
-    const response = await fetch(url, { headers: { accept: 'application/json' } });
+    const response = await fetch(url, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(1500) });
     if (!response.ok) {
       return null;
     }
@@ -571,8 +392,8 @@ function buildDeviceStatus(
   return {
     deviceId: 'hajime-01',
     online,
-    battery: typeof health?.battery === 'number' ? health.battery : 82,
-    foodLevel: typeof health?.food_level === 'number' ? health.food_level : 38,
+    battery: typeof health?.battery === 'number' ? health.battery : 0,
+    foodLevel: typeof health?.food_level === 'number' ? health.food_level : 0,
     trackingEnabled: typeof health?.tracking_enabled === 'boolean' ? health.tracking_enabled : streamConnected,
     streamConnected,
     cameraDevice:
@@ -689,7 +510,7 @@ async function fetchBridgeJson(targetPath: string, init?: RequestInit, query?: R
     throw new Error('JETSON_BRIDGE_BASE_URL is not configured yet.');
   }
 
-  const response = await fetch(url, init);
+  const response = await fetch(url, { ...init, signal: AbortSignal.timeout(3000) });
   const text = await response.text();
 
   let data: unknown;
@@ -758,6 +579,21 @@ async function handleBridgeAction(
       },
       req.query,
     );
+
+    if (action === 'feed') {
+      await fetch(`${process.env.INTELLIGENCE_ORIGIN || 'http://127.0.0.1:8001'}/api/v1/commands/feed`, {
+        method: 'POST',
+        headers: process.env.HAJIMI_API_TOKEN ? { authorization: `Bearer ${process.env.HAJIMI_API_TOKEN}` } : {},
+        signal: AbortSignal.timeout(2000),
+      }).catch(() => undefined);
+    }
+    if (target === 'gimbal') {
+      await fetch(`${process.env.INTELLIGENCE_ORIGIN || 'http://127.0.0.1:8001'}/api/v1/cameras/primary/motion-reset`, {
+        method: 'POST',
+        headers: process.env.HAJIMI_API_TOKEN ? { authorization: `Bearer ${process.env.HAJIMI_API_TOKEN}` } : {},
+        signal: AbortSignal.timeout(2000),
+      }).catch(() => undefined);
+    }
 
     res.json({
       ok: true,
@@ -830,34 +666,6 @@ app.get('/api/recordings', (_req, res) => {
     ok: true,
     recordings: listRecordings(),
   });
-});
-
-app.get('/api/reports/dates', (_req, res) => {
-  res.json({
-    ok: true,
-    dates: getReportDates(),
-  });
-});
-
-app.get('/api/reports/:date', (req, res) => {
-  res.json(buildDailyReport(req.params.date));
-});
-
-app.post('/api/behavior/detection', (req, res) => {
-  const label = req.body?.label as YoloBehaviorLabel | undefined;
-  const score = typeof req.body?.score === 'number' ? req.body.score : undefined;
-  const iso = typeof req.body?.iso === 'string' ? req.body.iso : nowIso();
-
-  if (!label || !(label in behaviorLabelMeta)) {
-    res.status(400).json({
-      ok: false,
-      error: 'Unsupported behavior label',
-      supportedLabels: Object.keys(behaviorLabelMeta),
-    });
-    return;
-  }
-
-  res.json(logBehaviorDetection(label, iso, score));
 });
 
 app.post('/api/recording/start', async (_req, res) => {
@@ -1042,7 +850,7 @@ wss.on('connection', async (ws) => {
   });
 });
 
-server.listen(port, () => {
+server.listen(port, '127.0.0.1', () => {
   console.log(
     JSON.stringify({
       level: 'info',

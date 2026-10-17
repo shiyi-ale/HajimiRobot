@@ -1,0 +1,200 @@
+{
+  "recommended_experiment": "wfd_yolo26n_from_x_b128_gpu5",
+  "experiments": [
+    {
+      "id": "baseline_yolo26n",
+      "role": "baseline",
+      "recommended": false,
+      "completed_epochs": 18,
+      "best_validation_epoch": 8,
+      "best_validation_map50": 0.77566,
+      "best_validation_map50_95": 0.70186,
+      "weights": [
+        {
+          "name": "best.pt",
+          "path": "yoloexp/exp/baseline_yolo26n/weights/best.pt",
+          "size_bytes": 20738690,
+          "sha256": "377fd13b4548ba7bc01c6ba1dbc995ab6eefb239a60559b08ea42bf25e6f8007"
+        },
+        {
+          "name": "last.pt",
+          "path": "yoloexp/exp/baseline_yolo26n/weights/last.pt",
+          "size_bytes": 20739970,
+          "sha256": "4bd216f8c6b2a8f0249705c7b2a707536c63d2500ce69d88f4a715bf8b1db03d"
+        }
+      ]
+    },
+    {
+      "id": "baseline_yolo26n_batch_auto",
+      "role": "baseline",
+      "recommended": false,
+      "completed_epochs": 100,
+      "best_validation_epoch": 57,
+      "best_validation_map50": 0.78345,
+      "best_validation_map50_95": 0.7175,
+      "weights": [
+        {
+          "name": "best.pt",
+          "path": "yoloexp/exp/baseline_yolo26n_batch_auto/weights/best.pt",
+          "size_bytes": 5356741,
+          "sha256": "27fc253cddb1d9815d884f0d34068761557387068145ca4639ded332a0f3c61d"
+        },
+        {
+          "name": "last.pt",
+          "path": "yoloexp/exp/baseline_yolo26n_batch_auto/weights/last.pt",
+          "size_bytes": 5356741,
+          "sha256": "0e48e48e638f98758aaeaa72083a949cc6d78b0a808c9bdbb6bf1967ee478296"
+        }
+      ]
+    },
+    {
+      "id": "kd_yolo26n",
+      "role": "KD student",
+      "recommended": false,
+      "completed_epochs": 100,
+      "best_validation_epoch": 60,
+      "best_validation_map50": 0.76849,
+      "best_validation_map50_95": 0.7228,
+      "weights": [
+        {
+          "name": "best.pt",
+          "path": "yoloexp/exp/kd_yolo26n/weights/best.pt",
+          "size_bytes": 5357637,
+          "sha256": "fa23c20e7cd5243ab4777331aa9d510c20dee6034443f1aa7630aab98d5076ed"
+        },
+        {
+          "name": "last.pt",
+          "path": "yoloexp/exp/kd_yolo26n/weights/last.pt",
+          "size_bytes": 5357637,
+          "sha256": "f920fbb70cc1393f235d1e37b87349a2cbdc7e34287895fe8250c1e1fedc8182"
+        }
+      ]
+    },
+    {
+      "id": "kd_yolo26n_from_x",
+      "role": "KD student",
+      "recommended": false,
+      "completed_epochs": 36,
+      "best_validation_epoch": 22,
+      "best_validation_map50": 0.80719,
+      "best_validation_map50_95": 0.71368,
+      "weights": [
+        {
+          "name": "best.pt",
+          "path": "yoloexp/exp/kd_yolo26n_from_x/weights/best.pt",
+          "size_bytes": 22660409,
+          "sha256": "629e43ef851a859bc5cbbe1bdc1b3c4f361a386884607e17a8544878e44235b4"
+        },
+        {
+          "name": "last.pt",
+          "path": "yoloexp/exp/kd_yolo26n_from_x/weights/last.pt",
+          "size_bytes": 22662329,
+          "sha256": "689813377ed642bcfbcea25eaee4a09ec4c999e7c24163067737403a11c68709"
+        }
+      ]
+    },
+    {
+      "id": "kd_yolo26n_from_x_nohup_b512",
+      "role": "KD student",
+      "recommended": false,
+      "completed_epochs": 100,
+      "best_validation_epoch": 22,
+      "best_validation_map50": 0.80719,
+      "best_validation_map50_95": 0.71368,
+      "weights": [
+        {
+          "name": "best.pt",
+          "path": "yoloexp/exp/kd_yolo26n_from_x_nohup_b512/weights/best.pt",
+          "size_bytes": 5357637,
+          "sha256": "5b52d634a9450c6a9213a9729e7713e701eb6e2b1cb5793fb5c9dad98b3d9c26"
+        },
+        {
+          "name": "last.pt",
+          "path": "yoloexp/exp/kd_yolo26n_from_x_nohup_b512/weights/last.pt",
+          "size_bytes": 5357637,
+          "sha256": "ebe2ad1136960ee9d36c2455bd95277d7f7570146df5a404685a81882733b1a3"
+        }
+      ]
+    },
+    {
+      "id": "teacher_yolo26s_batch_auto",
+      "role": "teacher",
+      "recommended": false,
+      "completed_epochs": 100,
+      "best_validation_epoch": 31,
+      "best_validation_map50": 0.7871,
+      "best_validation_map50_95": 0.7238,
+      "weights": [
+        {
+          "name": "best.pt",
+          "path": "yoloexp/exp/teacher_yolo26s_batch_auto/weights/best.pt",
+          "size_bytes": 20284997,
+          "sha256": "bbd6d98786ce1c583756a25a7afc47362c199eedf8876dbd081bb460f3176343"
+        },
+        {
+          "name": "last.pt",
+          "path": "yoloexp/exp/teacher_yolo26s_batch_auto/weights/last.pt",
+          "size_bytes": 20284997,
+          "sha256": "e4313b3bfad79fb2408ac81fab97379352424c2fdcbff834365ea0410db5731f"
+        }
+      ]
+    },
+    {
+      "id": "teacher_yolo26x",
+      "role": "teacher",
+      "recommended": false,
+      "completed_epochs": 100,
+      "best_validation_epoch": 29,
+      "best_validation_map50": 0.79564,
+      "best_validation_map50_95": 0.74133,
+      "weights": [
+        {
+          "name": "best.pt",
+          "path": "yoloexp/exp/teacher_yolo26x/weights/best.pt",
+          "size_bytes": 118304293,
+          "sha256": "8b1e48fc990a740388512ab00a8d1ee00b4e8f2603cc1e5d3c38648af21e7962"
+        },
+        {
+          "name": "last.pt",
+          "path": "yoloexp/exp/teacher_yolo26x/weights/last.pt",
+          "size_bytes": 118304293,
+          "sha256": "53b6f96ef9bcfb0a5408b22e5d507a68e1caa82e2926457e2bdae427d0c26fee"
+        }
+      ]
+    },
+    {
+      "id": "wfd_yolo26n_from_x_b128_gpu5",
+      "role": "WFD student",
+      "recommended": true,
+      "completed_epochs": 100,
+      "best_validation_epoch": 36,
+      "best_validation_map50": 0.76682,
+      "best_validation_map50_95": 0.70484,
+      "weights": [
+        {
+          "name": "best.pt",
+          "path": "yoloexp/exp/wfd_yolo26n_from_x_b128_gpu5/weights/best.pt",
+          "size_bytes": 5357637,
+          "sha256": "6fd728b52d16d60aa7a551f151a8162db969930176d7fe78a4a88665989fe507"
+        },
+        {
+          "name": "last.pt",
+          "path": "yoloexp/exp/wfd_yolo26n_from_x_b128_gpu5/weights/last.pt",
+          "size_bytes": 5357637,
+          "sha256": "29d23a0241637988a1d6db0572852c76bff972bef0cddf56c3647cafe5e0f6db"
+        }
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "path": "yoloexp/19757151-hd_1080_1920_30fps.mp4",
+      "name": "19757151-hd_1080_1920_30fps.mp4",
+      "width": 720,
+      "height": 1280,
+      "fps": 29.97002997002997,
+      "duration_sec": 15.5155
+    }
+  ],
+  "metric_note": "CSV training-validation metrics, not independently reproduced test-set mAP. Original experiments are preserved."
+}
